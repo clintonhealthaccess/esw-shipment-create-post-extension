@@ -24,10 +24,11 @@ import org.slf4j.profiler.Profiler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component(value = "EswatiniShipmentCreatePostProcessor")
-public class EswatiniShipmentCreatePostProcessor implements ShipmentCreatePostProcessor {
+@Component(value = "EswatiniNavisionShipmentProcessor")
+public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProcessor {
 
-  private static final XLogger XLOGGER = XLoggerFactory.getXLogger(EswatiniShipmentCreatePostProcessor.class);
+  private static final XLogger XLOGGER = XLoggerFactory.getXLogger(
+      EswatiniNavisionShipmentProcessor.class);
 
   @Autowired
   private DefaultShipmentCreatePostProcessor defaultShipmentCreatePostProcessor;
@@ -35,7 +36,7 @@ public class EswatiniShipmentCreatePostProcessor implements ShipmentCreatePostPr
   @Override
   public void process(Shipment shipment) {
     XLOGGER.entry(shipment);
-    Profiler profiler = new Profiler("ESWATINI_SHIPMENT_CREATE_POST_PROCESSOR");
+    Profiler profiler = new Profiler("ESWATINI_NAVISION_SHIPMENT_PROCESSOR");
     profiler.setLogger(XLOGGER);
 
     Map<String, String> orderExtraData = shipment.getOrder().getExtraData();
