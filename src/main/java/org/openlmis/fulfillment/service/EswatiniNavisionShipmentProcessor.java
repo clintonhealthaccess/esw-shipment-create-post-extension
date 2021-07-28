@@ -18,9 +18,6 @@ package org.openlmis.fulfillment.service;
 import java.util.Map;
 import java.util.UUID;
 
-import org.openlmis.esw.extension.RequisitionDto;
-import org.openlmis.esw.extension.RequisitionService;
-import org.openlmis.esw.extension.StatusLogEntryDto;
 import org.openlmis.fulfillment.domain.Shipment;
 import org.openlmis.fulfillment.extension.point.ShipmentCreatePostProcessor;
 import org.openlmis.fulfillment.service.notification.NotificationService;
@@ -48,7 +45,7 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
   private NotificationService notificationService;
 
   @Autowired
-  private RequisitionService requisitionService;
+  private RequisitionServiceEswShipment requisitionService;
 
   @Override
   public void process(Shipment shipment) {
@@ -75,12 +72,12 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
     try {
       UUID requisitionId = shipment.getOrder().getExternalId();
       XLOGGER.info("Requisition Id: {}", requisitionId);
-      RequisitionDto requisitionDto = requisitionService.findOne(requisitionId);
+      RequisitionDtoEswShipment requisitionDto = requisitionService.findOne(requisitionId);
       if (requisitionDto != null) {
         XLOGGER.info("Requisition Dto: {}", requisitionDto);
         Map statusChanges = requisitionDto.getStatusChanges();
         XLOGGER.info("Status changes {}", statusChanges);
-        StatusLogEntryDto statusLogEntryDto = (StatusLogEntryDto) statusChanges.get("INITIATED");
+        StatusLogEntryDtoEswShipment statusLogEntryDto = (StatusLogEntryDtoEswShipment) statusChanges.get("INITIATED");
         if (statusLogEntryDto != null) {
           UUID authorId = statusLogEntryDto.getAuthorId();
           UserDto authorDto = userReferenceDataService.findOne(authorId);

@@ -6,9 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.openlmis.esw.extension.RequisitionDto;
-import org.openlmis.esw.extension.RequisitionService;
-import org.openlmis.esw.extension.StatusLogEntryDto;
 import org.openlmis.fulfillment.domain.Order;
 import org.openlmis.fulfillment.domain.Shipment;
 import org.openlmis.fulfillment.service.notification.NotificationService;
@@ -26,7 +23,7 @@ class EswatiniNavisionShipmentProcessorTest {
     private EswatiniNavisionShipmentProcessor testingObject;
 
     @Mock
-    private RequisitionService requisitionService;
+    private RequisitionServiceEswShipment requisitionService;
 
     @Mock
     private UserReferenceDataService userReferenceDataService;
@@ -56,12 +53,12 @@ class EswatiniNavisionShipmentProcessorTest {
         order.setExternalId(reqUUID);
         HashMap<String, String> extraData = new HashMap<>();
         order.setExtraData(extraData);
-        HashMap<String, StatusLogEntryDto> statusChanges = new HashMap<>();
+        HashMap<String, StatusLogEntryDtoEswShipment> statusChanges = new HashMap<>();
         UUID authorId = UUID.randomUUID();
-        StatusLogEntryDto statusLogEntryDto = new StatusLogEntryDto();
+        StatusLogEntryDtoEswShipment statusLogEntryDto = new StatusLogEntryDtoEswShipment();
         statusLogEntryDto.setAuthorId(authorId);
         statusChanges.put("INITIATED", statusLogEntryDto);
-        RequisitionDto requisitionDto = new RequisitionDto();
+        RequisitionDtoEswShipment requisitionDto = new RequisitionDtoEswShipment();
         requisitionDto.setId(reqUUID);
         requisitionDto.setStatusChanges(statusChanges);
         UserDto userDto = new UserDto();

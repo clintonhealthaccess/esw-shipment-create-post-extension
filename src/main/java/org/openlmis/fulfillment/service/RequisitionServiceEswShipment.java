@@ -13,9 +13,8 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org. 
  */
 
-package org.openlmis.esw.extension;
+package org.openlmis.fulfillment.service;
 
-import org.openlmis.fulfillment.service.AuthService;
 import org.openlmis.fulfillment.service.request.RequestHeaders;
 import org.openlmis.fulfillment.service.request.RequestHelper;
 import org.slf4j.Logger;
@@ -37,7 +36,7 @@ import java.util.UUID;
 import static org.openlmis.fulfillment.service.request.RequestHelper.createUri;
 
 @Service
-public class RequisitionService {
+public class RequisitionServiceEswShipment {
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -57,11 +56,11 @@ public class RequisitionService {
    * @param id UUID of requesting object.
    * @return Requesting reference data object.
    */
-  public RequisitionDto findOne(UUID id) {
+  public RequisitionDtoEswShipment findOne(UUID id) {
     String url = getServiceUrl() + getUrl() + id;
 
     try {
-      ResponseEntity<RequisitionDto> responseEntity = restTemplate.exchange(
+      ResponseEntity<RequisitionDtoEswShipment> responseEntity = restTemplate.exchange(
           buildUri(url), HttpMethod.GET, createEntity(), getResultClass());
       return responseEntity.getBody();
     } catch (HttpStatusCodeException ex) {
@@ -99,11 +98,11 @@ public class RequisitionService {
     return REQUISITION_API;
   }
 
-  protected Class<RequisitionDto> getResultClass() {
-    return RequisitionDto.class;
+  protected Class<RequisitionDtoEswShipment> getResultClass() {
+    return RequisitionDtoEswShipment.class;
   }
 
-  protected Class<RequisitionDto[]> getArrayResultClass() {
-    return RequisitionDto[].class;
+  protected Class<RequisitionDtoEswShipment[]> getArrayResultClass() {
+    return RequisitionDtoEswShipment[].class;
   }
 }

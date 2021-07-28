@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.esw.extension;
+package org.openlmis.fulfillment.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RequisitionDto {
+public class RequisitionDtoEswShipment {
   private UUID id;
   private Map statusChanges;
 
