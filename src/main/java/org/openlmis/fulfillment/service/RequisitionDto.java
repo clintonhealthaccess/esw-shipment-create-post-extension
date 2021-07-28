@@ -16,19 +16,36 @@
 package org.openlmis.fulfillment.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
 
 import java.util.Map;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 public class RequisitionDto {
   private UUID id;
   private Map<String, StatusLogEntryDto> statusChanges;
+
+  public UUID getId() {
+    return id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
+  }
+
+  public Map<String, StatusLogEntryDto> getStatusChanges() {
+    return statusChanges;
+  }
+
+  public void setStatusChanges(Map<String, StatusLogEntryDto> statusChanges) {
+    this.statusChanges = statusChanges;
+  }
+
+  @Override
+  public String toString() {
+    return "RequisitionDto{" +
+        "id=" + id +
+        ", statusChanges=" + statusChanges +
+        '}';
+  }
 }

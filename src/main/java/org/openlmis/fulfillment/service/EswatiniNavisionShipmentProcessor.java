@@ -15,7 +15,6 @@
 
 package org.openlmis.fulfillment.service;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,12 +23,10 @@ import org.openlmis.fulfillment.extension.point.ShipmentCreatePostProcessor;
 import org.openlmis.fulfillment.service.notification.NotificationService;
 import org.openlmis.fulfillment.service.referencedata.UserDto;
 import org.openlmis.fulfillment.service.referencedata.UserReferenceDataService;
-import org.openlmis.fulfillment.service.request.RequestParameters;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.slf4j.profiler.Profiler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component(value = "EswatiniNavisionShipmentProcessor")
@@ -65,20 +62,33 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
       defaultShipmentCreatePostProcessor.process(shipment);
     }
 
-    try {
-      UUID requisitionId = shipment.getOrder().getExternalId();
-      RequisitionDto requisitionDto = requisitionService.findOne(requisitionId);
-      StatusLogEntryDto statusLogEntryDto = requisitionDto.getStatusChanges().get("INITIATED");
-      UUID authorId = statusLogEntryDto.getAuthorId();
-      UserDto authorDto = userReferenceDataService.findOne(authorId);
-      XLOGGER.debug(String.format("Sending order shipped email to %s", authorDto.getEmail()));
-      String orderShippedText = String.format("Your order %s have been shipped", shipment.getOrder().getOrderCode());
-      notificationService.notify(authorDto, orderShippedText, orderShippedText);
-    } catch (Exception e) {
-      XLOGGER.error("Failed to send notification to the requisition author", e);
-    }
+    sendNotificationToRequisitionAuthor(shipment);
 
     profiler.stop().log();
     XLOGGER.exit();
+  }
+
+  protected boolean sendNotificationToRequisitionAuthor(Shipment shipment) {
+    try {
+      UUID requisitionId = shipment.getOrder().getExternalId();
+      XLOGGER.info("Requisition Id: {}", requisitionId);
+      RequisitionDto requisitionDto = requisitionService.findOne(requisitionId);
+      if (requisitionDto != null) {
+        Map<String, StatusLogEntryDto> statusChanges = requisitionDto.getStatusChanges();
+        XLOGGER.info("Status changes {}", statusChanges);
+        StatusLogEntryDto statusLogEntryDto = statusChanges.get("INITIATED");
+        if (statusLogEntryDto != null) {
+          UUID authorId = statusLogEntryDto.getAuthorId();
+          UserDto authorDto = userReferenceDataService.findOne(authorId);
+          XLOGGER.debug("Sending order shipped email to {}", authorDto.getEmail());
+          String orderShippedText = String.format("Your order %s have been shipped", shipment.getOrder().getOrderCode());
+          notificationService.notify(authorDto, orderShippedText, orderShippedText);
+          return true;
+        }
+      }
+    } catch (Exception e) {
+      XLOGGER.error("Failed to send notification to the requisition author", e);
+    }
+    return false;
   }
 }
