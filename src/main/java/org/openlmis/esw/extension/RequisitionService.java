@@ -13,8 +13,9 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org. 
  */
 
-package org.openlmis.fulfillment.service;
+package org.openlmis.esw.extension;
 
+import org.openlmis.fulfillment.service.AuthService;
 import org.openlmis.fulfillment.service.request.RequestHeaders;
 import org.openlmis.fulfillment.service.request.RequestHelper;
 import org.slf4j.Logger;

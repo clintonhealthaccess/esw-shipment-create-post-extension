@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.fulfillment.service;
+package org.openlmis.esw.extension;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

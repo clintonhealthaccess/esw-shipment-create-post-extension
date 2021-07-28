@@ -18,6 +18,9 @@ package org.openlmis.fulfillment.service;
 import java.util.Map;
 import java.util.UUID;
 
+import org.openlmis.esw.extension.RequisitionDto;
+import org.openlmis.esw.extension.RequisitionService;
+import org.openlmis.esw.extension.StatusLogEntryDto;
 import org.openlmis.fulfillment.domain.Shipment;
 import org.openlmis.fulfillment.extension.point.ShipmentCreatePostProcessor;
 import org.openlmis.fulfillment.service.notification.NotificationService;
