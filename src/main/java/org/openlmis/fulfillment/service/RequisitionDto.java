@@ -23,7 +23,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequisitionDto {
   private UUID id;
-  private Map<String, StatusLogEntryDto> statusChanges;
+  private Map statusChanges;
 
   public UUID getId() {
     return id;
@@ -33,11 +33,11 @@ public class RequisitionDto {
     this.id = id;
   }
 
-  public Map<String, StatusLogEntryDto> getStatusChanges() {
+  public Map getStatusChanges() {
     return statusChanges;
   }
 
-  public void setStatusChanges(Map<String, StatusLogEntryDto> statusChanges) {
+  public void setStatusChanges(Map statusChanges) {
     this.statusChanges = statusChanges;
   }
 

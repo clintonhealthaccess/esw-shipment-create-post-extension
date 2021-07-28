@@ -74,9 +74,10 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
       XLOGGER.info("Requisition Id: {}", requisitionId);
       RequisitionDto requisitionDto = requisitionService.findOne(requisitionId);
       if (requisitionDto != null) {
-        Map<String, StatusLogEntryDto> statusChanges = requisitionDto.getStatusChanges();
+        XLOGGER.info("Requisition Dto: {}", requisitionDto);
+        Map statusChanges = requisitionDto.getStatusChanges();
         XLOGGER.info("Status changes {}", statusChanges);
-        StatusLogEntryDto statusLogEntryDto = statusChanges.get("INITIATED");
+        StatusLogEntryDto statusLogEntryDto = (StatusLogEntryDto) statusChanges.get("INITIATED");
         if (statusLogEntryDto != null) {
           UUID authorId = statusLogEntryDto.getAuthorId();
           UserDto authorDto = userReferenceDataService.findOne(authorId);
