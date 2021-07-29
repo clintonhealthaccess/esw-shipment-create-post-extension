@@ -77,11 +77,11 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
         XLOGGER.info("Requisition Dto: {}", requisitionDto);
         Map statusChanges = requisitionDto.getStatusChanges();
         XLOGGER.info("Status changes {}", statusChanges);
-        StatusLogEntryDtoEswShipment statusLogEntryDto = (StatusLogEntryDtoEswShipment) statusChanges.get("INITIATED");
-        if (statusLogEntryDto != null) {
-          UUID authorId = statusLogEntryDto.getAuthorId();
-          UserDto authorDto = userReferenceDataService.findOne(authorId);
-          XLOGGER.debug("Sending order shipped email to {}", authorDto.getEmail());
+        Map statusLogEntry = (Map) statusChanges.get("INITIATED");
+        if (statusLogEntry != null) {
+          String authorId = (String) statusLogEntry.get("authorId");
+          UserDto authorDto = userReferenceDataService.findOne(UUID.fromString(authorId));
+          XLOGGER.debug("Sending order shipped email to user: {}", authorDto.getId());
           String orderShippedText = String.format("Your order %s have been shipped", shipment.getOrder().getOrderCode());
           notificationService.notify(authorDto, orderShippedText, orderShippedText);
           return true;
