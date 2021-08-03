@@ -102,7 +102,4 @@ public class RequisitionServiceEswShipment {
     return RequisitionDtoEswShipment.class;
   }
 
-  protected Class<RequisitionDtoEswShipment[]> getArrayResultClass() {
-    return RequisitionDtoEswShipment[].class;
-  }
 }

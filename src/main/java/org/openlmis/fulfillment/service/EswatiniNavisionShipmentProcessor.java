@@ -21,8 +21,7 @@ import java.util.UUID;
 import org.openlmis.fulfillment.domain.Shipment;
 import org.openlmis.fulfillment.extension.point.ShipmentCreatePostProcessor;
 import org.openlmis.fulfillment.service.notification.NotificationService;
-import org.openlmis.fulfillment.service.referencedata.UserDto;
-import org.openlmis.fulfillment.service.referencedata.UserReferenceDataService;
+import org.openlmis.fulfillment.service.referencedata.*;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.slf4j.profiler.Profiler;
@@ -46,6 +45,12 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
 
   @Autowired
   private RequisitionServiceEswShipment requisitionService;
+
+  @Autowired
+  private ProgramReferenceDataService programReferenceDataService;
+
+  @Autowired
+  private FacilityReferenceDataService facilityReferenceDataService;
 
   @Override
   public void process(Shipment shipment) {
@@ -82,13 +87,21 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
           String authorId = (String) statusLogEntry.get("authorId");
           UserDto authorDto = userReferenceDataService.findOne(UUID.fromString(authorId));
           XLOGGER.debug("Sending order shipped email to user: {}", authorDto.getId());
-          String orderShippedText = String.format("Your order %s have been shipped", shipment.getOrder().getOrderCode());
-          notificationService.notify(authorDto, orderShippedText, orderShippedText);
+          String orderCode = shipment.getOrder().getOrderCode();
+          ProgramDto programDto = programReferenceDataService.findOne(shipment.getProgramId());
+          FacilityDto facilityDto = facilityReferenceDataService.findOne(shipment.getSupplyingFacilityId());
+          String subject = String.format("Your order %s has been successfully shipped", orderCode);
+          String body = String.format("Order %s for %s has been successfully shipped from %s",
+              orderCode,
+              programDto.getName(),
+              facilityDto.getName());
+
+          notificationService.notify(authorDto, subject, body);
           return true;
         }
       }
     } catch (Exception e) {
-      XLOGGER.error("Failed to send notification to the requisition author", e);
+      XLOGGER.debug("Failed to send notification to the requisition author", e);
     }
     return false;
   }
