@@ -20,8 +20,10 @@ import java.util.UUID;
 
 import org.openlmis.fulfillment.domain.Shipment;
 import org.openlmis.fulfillment.extension.point.ShipmentCreatePostProcessor;
+import org.openlmis.fulfillment.i18n.MessageService;
 import org.openlmis.fulfillment.service.notification.NotificationService;
 import org.openlmis.fulfillment.service.referencedata.*;
+import org.openlmis.fulfillment.util.Message;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.slf4j.profiler.Profiler;
@@ -51,6 +53,9 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
 
   @Autowired
   private FacilityReferenceDataService facilityReferenceDataService;
+
+  @Autowired
+  protected MessageService messageService;
 
   @Override
   public void process(Shipment shipment) {
@@ -90,7 +95,10 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
           String orderCode = shipment.getOrder().getOrderCode();
           ProgramDto programDto = programReferenceDataService.findOne(shipment.getProgramId());
           FacilityDto facilityDto = facilityReferenceDataService.findOne(shipment.getSupplyingFacilityId());
-          String subject = String.format("Your order %s has been successfully shipped", orderCode);
+//          String subject = String.format("Your order %s has been successfully shipped", orderCode);
+          String subject = messageService
+                  .localize(new Message("fulfillment.email.orderShipped.subject"))
+                  .getMessage();
           String body = String.format("Order %s for %s has been successfully shipped from %s",
               orderCode,
               programDto.getName(),
