@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.fulfillment.service;
+package org.openlmis.fulfillment.service.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -23,7 +23,9 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequisitionDtoEswShipment {
   private UUID id;
-  private Map statusChanges;
+  private Map<String, StatusLogEntryDtoEswShipment> statusChanges;
+  private IdHolderDtoEswShipment program;
+  private IdHolderDtoEswShipment facility;
 
   public UUID getId() {
     return id;
@@ -33,19 +35,37 @@ public class RequisitionDtoEswShipment {
     this.id = id;
   }
 
-  public Map getStatusChanges() {
+  public Map<String, StatusLogEntryDtoEswShipment> getStatusChanges() {
     return statusChanges;
   }
 
-  public void setStatusChanges(Map statusChanges) {
+  public void setStatusChanges(Map<String, StatusLogEntryDtoEswShipment> statusChanges) {
     this.statusChanges = statusChanges;
+  }
+
+  public IdHolderDtoEswShipment getProgram() {
+    return program;
+  }
+
+  public void setProgram(IdHolderDtoEswShipment program) {
+    this.program = program;
+  }
+
+  public IdHolderDtoEswShipment getFacility() {
+    return facility;
+  }
+
+  public void setFacility(IdHolderDtoEswShipment facility) {
+    this.facility = facility;
   }
 
   @Override
   public String toString() {
-    return "RequisitionDto{" +
-        "id=" + id +
-        ", statusChanges=" + statusChanges +
-        '}';
+    return "RequisitionDtoEswShipment{" +
+            "id=" + id +
+            ", statusChanges=" + statusChanges +
+            ", program=" + program +
+            ", facility=" + facility +
+            '}';
   }
 }

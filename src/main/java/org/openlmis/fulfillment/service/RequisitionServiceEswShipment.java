@@ -1,6 +1,5 @@
 /*
  * This program is part of the OpenLMIS logistics management information system platform software.
- * Copyright © 2021 VillageReach
  *
  * This program is free software: you can redistribute it and/or modify it under the terms
  * of the GNU Affero General Public License as published by the Free Software Foundation either
@@ -15,91 +14,44 @@
 
 package org.openlmis.fulfillment.service;
 
-import org.openlmis.fulfillment.service.request.RequestHeaders;
-import org.openlmis.fulfillment.service.request.RequestHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
+import org.openlmis.fulfillment.service.dtos.RequisitionDtoEswShipment;
+import org.openlmis.fulfillment.service.dtos.StatusLogEntryDtoEswShipment;
+import org.openlmis.fulfillment.service.referencedata.BaseReferenceDataService;
+import org.openlmis.fulfillment.service.request.RequestParameters;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.util.UUID;
-
-import static org.openlmis.fulfillment.service.request.RequestHelper.createUri;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-public class RequisitionServiceEswShipment {
+public class RequisitionServiceEswShipment extends BaseReferenceDataService<RequisitionDtoEswShipment> {
 
-  private final Logger logger = LoggerFactory.getLogger(getClass());
-
-  private static final String REQUISITION_API = "/api/v2/requisitions/";
-
-  @Autowired
-  protected AuthService authService;
-
-  protected RestOperations restTemplate = new RestTemplate();
-
-  @Value("${requisition.url}")
-  private String requisitionUrl;
-
-  /**
-   * Return one object from Reference data service.
-   *
-   * @param id UUID of requesting object.
-   * @return Requesting reference data object.
-   */
-  public RequisitionDtoEswShipment findOne(UUID id) {
-    String url = getServiceUrl() + getUrl() + id;
-
-    try {
-      ResponseEntity<RequisitionDtoEswShipment> responseEntity = restTemplate.exchange(
-          buildUri(url), HttpMethod.GET, createEntity(), getResultClass());
-      return responseEntity.getBody();
-    } catch (HttpStatusCodeException ex) {
-      // rest template will handle 404 as an exception, instead of returning null
-      if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
-        logger.warn("{} with id {} does not exist. ", getResultClass().getSimpleName(), id);
-        return null;
-      } else {
-        throw buildDataRetrievalException(ex);
-      }
+    @Override
+    protected String getUrl() {
+        return "/api/requisitions/";
     }
-  }
 
-  protected URI buildUri(String url) {
-    return createUri(url);
-  }
+    @Override
+    protected Class<RequisitionDtoEswShipment> getResultClass() {
+        return RequisitionDtoEswShipment.class;
+    }
 
-  protected  <E> HttpEntity<E> createEntity() {
-    return RequestHelper.createEntity(createHeadersWithAuth());
-  }
+    @Override
+    protected Class<RequisitionDtoEswShipment[]> getArrayResultClass() {
+        return RequisitionDtoEswShipment[].class;
+    }
 
-  private RequestHeaders createHeadersWithAuth() {
-    return RequestHeaders.init().setAuth(authService.obtainAccessToken());
-  }
+    public List<RequisitionDtoEswShipment> searchAndFilter(RequestParameters parameters) {
+        List<RequisitionDtoEswShipment> requisitions = getPage("search", parameters, null, HttpMethod.GET, getResultClass()).getContent();
+        return filter(requisitions);
+    }
 
-  protected DataRetrievalException buildDataRetrievalException(HttpStatusCodeException ex) {
-    return new DataRetrievalException(getResultClass().getSimpleName(), ex);
-  }
-
-  protected String getServiceUrl() {
-    return requisitionUrl;
-  }
-
-  protected String getUrl() {
-    return REQUISITION_API;
-  }
-
-  protected Class<RequisitionDtoEswShipment> getResultClass() {
-    return RequisitionDtoEswShipment.class;
-  }
-
+    List<RequisitionDtoEswShipment> filter(List<RequisitionDtoEswShipment> requisitions) {
+        return requisitions.stream().filter(r -> {
+            Map<String, StatusLogEntryDtoEswShipment> statusChanges = r.getStatusChanges();
+            return statusChanges.containsKey("SUBMITTED");
+        }).collect(Collectors.toList());
+    }
 }

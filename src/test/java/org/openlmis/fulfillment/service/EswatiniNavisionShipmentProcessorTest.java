@@ -8,6 +8,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openlmis.fulfillment.domain.Order;
 import org.openlmis.fulfillment.domain.Shipment;
+import org.openlmis.fulfillment.service.dtos.RequisitionDtoEswShipment;
+import org.openlmis.fulfillment.service.dtos.StatusLogEntryDtoEswShipment;
 import org.openlmis.fulfillment.service.notification.NotificationService;
 import org.openlmis.fulfillment.service.referencedata.UserDto;
 import org.openlmis.fulfillment.service.referencedata.UserReferenceDataService;
@@ -65,7 +67,6 @@ class EswatiniNavisionShipmentProcessorTest {
         userDto.setEmail("a@b.com");
         Mockito.when(requisitionService.findOne(reqUUID)).thenReturn(requisitionDto);
         Mockito.when(userReferenceDataService.findOne(authorId)).thenReturn(userDto);
-        Shipment shipment = new Shipment(order, null, null, null, null);
-        return shipment;
+        return new Shipment(order, null, null, null, null);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 @Service
-public class EswMessageService {
+public class MessageServiceEswShipment {
 
     @Autowired
     private ExposedMessageSourceImpl exposedMessageSourceImpl;
