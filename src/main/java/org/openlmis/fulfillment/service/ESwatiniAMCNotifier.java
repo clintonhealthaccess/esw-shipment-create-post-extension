@@ -32,6 +32,7 @@ public class ESwatiniAMCNotifier {
 
     @Scheduled(cron = "${amc.alert.cron}", zone = "${time.zoneId}")
     public void cronJob() {
+        XLOGGER.debug("INIT cronJob");
         LocalDate currentDate = LocalDate.now(ZoneId.of(timeZoneId));
         LocalDate d = LocalDate.of(2017, 5, 1);
         sendAMCAlert(d);
@@ -39,14 +40,24 @@ public class ESwatiniAMCNotifier {
 
     @Async
     protected void sendAMCAlert(LocalDate currentDate) {
-        ProcessingPeriodDto processingPeriodLastMonth = getProcessingPeriod(currentDate.minusMonths(1));
-        ProcessingPeriodDto processingPeriodLastMinusOneMonth = getProcessingPeriod(currentDate.minusMonths(2));
-        ProcessingPeriodDto processingPeriodLastMinusTwoMonths = getProcessingPeriod(currentDate.minusMonths(3));
-        List<RequisitionDtoEswShipment> requisitions = requisitionService.searchAndFilter(getSearchParams(processingPeriodLastMonth));
-        for(RequisitionDtoEswShipment r : requisitions) {
-            RequisitionDtoEswShipment pastReqMinusOne = getPastRequisition(r, processingPeriodLastMinusOneMonth);
-            RequisitionDtoEswShipment pastReqMinusTwo = getPastRequisition(r, processingPeriodLastMinusTwoMonths);
-            XLOGGER.debug("Req Id: {}, Req -1 Id: {}, Req -2 Id: {}", r.getId(), pastReqMinusOne.getId(), pastReqMinusTwo.getId());
+        try {
+            XLOGGER.debug("INIT sendAMCAlert");
+            ProcessingPeriodDto processingPeriodLastMonth = getProcessingPeriod(currentDate.minusMonths(1));
+            XLOGGER.debug("p1 id: {}", processingPeriodLastMonth.getId());
+            ProcessingPeriodDto processingPeriodLastMinusOneMonth = getProcessingPeriod(currentDate.minusMonths(2));
+            XLOGGER.debug("p2 id: {}", processingPeriodLastMinusOneMonth.getId());
+            ProcessingPeriodDto processingPeriodLastMinusTwoMonths = getProcessingPeriod(currentDate.minusMonths(3));
+            XLOGGER.debug("p3 id: {}", processingPeriodLastMinusTwoMonths.getId());
+            List<RequisitionDtoEswShipment> requisitions = requisitionService.searchAndFilter(getSearchParams(processingPeriodLastMonth));
+            XLOGGER.debug("req size: {}", requisitions.size());
+            for (RequisitionDtoEswShipment r : requisitions) {
+                XLOGGER.debug("r id: {}", r.getId());
+                RequisitionDtoEswShipment pastReqMinusOne = getPastRequisition(r, processingPeriodLastMinusOneMonth);
+                RequisitionDtoEswShipment pastReqMinusTwo = getPastRequisition(r, processingPeriodLastMinusTwoMonths);
+                XLOGGER.debug("Req Id: {}, Req -1 Id: {}, Req -2 Id: {}", r.getId(), pastReqMinusOne.getId(), pastReqMinusTwo.getId());
+            }
+        } catch(RuntimeException runtimeException) {
+            XLOGGER.debug("Error sending amc alert", runtimeException.getCause());
         }
     }
 
