@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -30,9 +31,17 @@ public class ESwatiniAMCNotifier {
     @Value("${time.zoneId}")
     private String timeZoneId;
 
+    @Value("${amc.alert.cron}")
+    private String amcAlertCron;
+
+    @PostConstruct
+    private void postConstruct() {
+        XLOGGER.debug("amc.alert.cron is {}", amcAlertCron);
+    }
+
     @Scheduled(cron = "${amc.alert.cron}", zone = "${time.zoneId}")
     public void cronJob() {
-        XLOGGER.debug("INIT cronJob");
+        XLOGGER.debug("INIT amcAlertCron");
         LocalDate currentDate = LocalDate.now(ZoneId.of(timeZoneId));
         LocalDate d = LocalDate.of(2017, 5, 1);
         sendAMCAlert(d);
