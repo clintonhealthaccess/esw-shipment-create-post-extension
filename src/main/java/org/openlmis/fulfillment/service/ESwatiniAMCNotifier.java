@@ -47,8 +47,7 @@ public class ESwatiniAMCNotifier {
         sendAMCAlert(d);
     }
 
-    @Async
-    protected void sendAMCAlert(LocalDate currentDate) {
+    private void sendAMCAlert(LocalDate currentDate) {
         try {
             XLOGGER.debug("INIT sendAMCAlert");
             ProcessingPeriodDto processingPeriodLastMonth = getProcessingPeriod(currentDate.minusMonths(1));
