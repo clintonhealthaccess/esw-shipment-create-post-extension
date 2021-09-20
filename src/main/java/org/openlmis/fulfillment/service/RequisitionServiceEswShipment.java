@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class RequisitionServiceEswShipment extends BaseReferenceDataService<RequisitionDtoEswShipment> {
+public class RequisitionServiceEswShipment extends BaseRequisitionServiceEswShipment<RequisitionDtoEswShipment> {
 
     @Override
     protected String getUrl() {
