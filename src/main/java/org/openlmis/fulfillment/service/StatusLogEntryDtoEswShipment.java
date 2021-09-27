@@ -1,4 +1,4 @@
-package org.openlmis.fulfillment.service.dtos;
+package org.openlmis.fulfillment.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

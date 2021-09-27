@@ -18,8 +18,6 @@ package org.openlmis.fulfillment.service;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.openlmis.fulfillment.domain.Shipment;
 import org.openlmis.fulfillment.extension.point.ShipmentCreatePostProcessor;
-import org.openlmis.fulfillment.service.dtos.RequisitionDtoEswShipment;
-import org.openlmis.fulfillment.service.dtos.StatusLogEntryDtoEswShipment;
 import org.openlmis.fulfillment.service.notification.NotificationService;
 import org.openlmis.fulfillment.service.referencedata.*;
 import org.slf4j.ext.XLogger;
@@ -57,7 +55,7 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
   private FacilityReferenceDataService facilityReferenceDataService;
 
   @Autowired
-  private MessageServiceEswShipment eswMessageService;
+  private EswMessageService eswMessageService;
 
   @Override
   public void process(Shipment shipment) {
@@ -87,17 +85,18 @@ public class EswatiniNavisionShipmentProcessor implements ShipmentCreatePostProc
       RequisitionDtoEswShipment requisitionDto = requisitionService.findOne(requisitionId);
       if (requisitionDto != null) {
         XLOGGER.info("Requisition Dto: {}", requisitionDto);
-        Map<String, StatusLogEntryDtoEswShipment> statusChanges = requisitionDto.getStatusChanges();
+        Map statusChanges = requisitionDto.getStatusChanges();
         XLOGGER.info("Status changes {}", statusChanges);
-        StatusLogEntryDtoEswShipment statusLogEntry = statusChanges.get("INITIATED");
+        Map statusLogEntry = (Map) statusChanges.get("INITIATED");
         if (statusLogEntry != null) {
-          UserDto authorDto = userReferenceDataService.findOne(statusLogEntry.getAuthorId());
+          String authorId = (String) statusLogEntry.get("authorId");
+          UserDto authorDto = userReferenceDataService.findOne(UUID.fromString(authorId));
           XLOGGER.debug("Sending order shipped email to user: {}", authorDto.getId());
           String orderCode = shipment.getOrder().getOrderCode();
           ProgramDto programDto = programReferenceDataService.findOne(shipment.getProgramId());
           FacilityDto supplyingFacility = facilityReferenceDataService.findOne(shipment.getSupplyingFacilityId());
 
-          Map<String, String> valuesMap = new HashMap<>();
+          Map<String, String> valuesMap = new HashMap();
           valuesMap.put("orderCode", orderCode);
           valuesMap.put("programName", programDto.getName());
           valuesMap.put("supplyingFacility", supplyingFacility.getName());
