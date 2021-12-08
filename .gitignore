@@ -12,3 +12,7 @@ gradlew*
 .tx/
 api-definition.json
 api-definition.html
+bin/
+.settings/
+.classpath
+.project
